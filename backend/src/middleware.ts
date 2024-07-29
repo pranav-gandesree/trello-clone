@@ -22,6 +22,7 @@ const verifyToken = async (req: Request | any, res: Response, next: NextFunction
         }
         
         const user = await User.findById(id);
+        
         if(!user){
             return res.send("user not registed")
         }

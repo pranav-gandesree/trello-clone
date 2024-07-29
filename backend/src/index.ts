@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import connectDb from './config';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoute'
+import taskRoutes from './routes/taskRoute'
+
 
 dotenv.config();
 
@@ -17,6 +19,7 @@ app.use(express.json())
 
 // Add authentication routes
 app.use('/api/auth', authRoutes);
+app.use('api/tasks',taskRoutes)
 
 app.listen(port, async() => {
      await connectDb();
