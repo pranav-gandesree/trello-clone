@@ -1,13 +1,29 @@
 import express, { Request, Response } from 'express';
+
 import connectDb from './config';
-import dotenv from 'dotenv';
 import authRoutes from './routes/authRoute'
 import taskRoutes from './routes/taskRoute'
 
+// const connectDb = require('./config')
+// const authRoutes = require('./routes/authRoute')
+// const taskRoutes = require('./routes/taskRoute')
+
+import cors from 'cors';
+import dotenv from 'dotenv'
+
+// const dotenv = require('dotenv');
+
+const app = express();
 
 dotenv.config();
 
-const app = express();
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with your client app's URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
+
+
 const port = process.env.PORT || 4000;
 
 app.get('/', (req: Request, res: Response) => {

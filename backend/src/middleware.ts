@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from './models/User';
+import User, {IUser } from './models/User';
 
 
 
-const verifyToken = async (req: Request | any, res: Response, next: NextFunction) => {
+const verifyToken = async (req: any, res: Response, next: NextFunction) => {
     try{
 
         const {authorization }= req.headers;
@@ -27,7 +27,9 @@ const verifyToken = async (req: Request | any, res: Response, next: NextFunction
             return res.send("user not registed")
         }
 
-        req.user = user;
+        (req: any) => {
+            req.user = user;
+        }
         next();
         
     }catch(error : any){

@@ -6,9 +6,19 @@ import User, {IUser} from '../models/User'
 const jwtSecret = process.env.JWT_SECRET || 'your_jwt_secret';
 
 const signupUser= async (req: Request, res: Response) =>{
-    const { name, email, password } = req.body;
+   
     try {
-        const existingUser: IUser | null = await User.findOne({ email });
+      const { username, email, password } = req.body;
+
+      console.log(username,email,password)
+
+      // Validate input
+      if (!username || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+  
+
+        const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).send({ message: 'User already exists' });
           }
@@ -16,17 +26,19 @@ const signupUser= async (req: Request, res: Response) =>{
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hashSync(password, salt);
 
-          const newUser: IUser = new User({
-            name,
+          const newUser = new User({
+            username,
             email,
             password: hashedPassword
           })
           await newUser.save();
 
+          console.log(newUser);
+
           if (newUser) {
             res.status(201).json({
                 _id: newUser._id,
-                name: newUser.name,
+                username: newUser.username,
                 email: newUser.email,
                 // token: generateToken(newUser._id)
             })
@@ -37,16 +49,19 @@ const signupUser= async (req: Request, res: Response) =>{
 
     } catch (error) {
       res.status(500).send({ message: 'Error creating user' });
+      console.log(error)
     }
 }
 
 const signinUser = async (req: Request, res: Response) =>{
     const { email, password} = req.body;
     try {
-        const user: IUser | null = await User.findOne({ email });
+        const user = await User.findOne({ email });
         if (!user) {
           return res.status(400).send({ message: 'Invalid email or password' });
         }
+        
+        console.log(user);
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -58,7 +73,7 @@ const signinUser = async (req: Request, res: Response) =>{
         if (user && isPasswordValid) {
         res.status(201).json({
             _id: user._id,
-            name: user.name,
+            username: user.username,
             email: user.email,
             token 
         })
@@ -66,6 +81,7 @@ const signinUser = async (req: Request, res: Response) =>{
 
       } catch (error) {
         res.status(500).send({ message: 'Error signing in' });
+        console.log(error)
       }
 }
 
