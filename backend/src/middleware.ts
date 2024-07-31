@@ -1,44 +1,45 @@
-import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User, {IUser } from './models/User';
-
-
+import { Request, Response, NextFunction } from 'express';
+import User from './models/User';
+import { clearScreenDown } from 'readline';
 
 const verifyToken = async (req: any, res: Response, next: NextFunction) => {
-    try{
+    try {
+        const { authorization } = req.headers;
 
-        const {authorization }= req.headers;
-        if(!authorization){
-            return res.send("no authorization found")
+        if (!authorization) {
+            return res.status(401).send("No authorization header found");
         }
-        
+
         const accessToken = authorization.split(" ")[1];
-        const payload = await jwt.verify(accessToken, process.env.JWT_SECRET!)
-        
-        const {id} = payload as any
-        
-        if(!id){
-            return res.send("Inavlid token provided")
+
+        if (!accessToken) {
+            return res.status(401).send("Token not found");
         }
-        
+
+        const payload = jwt.verify(accessToken, "jwtSecret");
+
+        const { id } = payload as any;
+
+        if (!id) {
+            return res.status(401).send("Invalid token provided");
+        }
+
         const user = await User.findById(id);
-        
-        if(!user){
-            return res.send("user not registed")
+
+        if (!user) {
+            return res.status(404).send("User not registered");
         }
 
-        (req: any) => {
-            req.user = user;
-        }
+        req.user = user;
         next();
-        
-    }catch(error : any){
-        if(error.name === "TokenExpiredError"){
-            return res.send("token expired");
+    } catch (error: any) {
+        console.error("Token verification error:", error);
+        if (error.name === "TokenExpiredError") {
+            return res.status(401).send("Token expired");
         }
-        res.status(500).send("server error")
+        res.status(500).send("Server error");
     }
-}
-    
-export default verifyToken;
+};
 
+export default verifyToken;

@@ -4,14 +4,15 @@ import connectDb from './config';
 import authRoutes from './routes/authRoute'
 import taskRoutes from './routes/taskRoute'
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 // const connectDb = require('./config')
 // const authRoutes = require('./routes/authRoute')
 // const taskRoutes = require('./routes/taskRoute')
 
 import cors from 'cors';
-import dotenv from 'dotenv'
 
-// const dotenv = require('dotenv');
 
 const app = express();
 
@@ -20,7 +21,7 @@ dotenv.config();
 app.use(cors({
   origin: 'http://localhost:3000', // Replace with your client app's URL
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', "Authorization"],
 }));
 
 
@@ -35,7 +36,7 @@ app.use(express.json())
 
 // Add authentication routes
 app.use('/api/auth', authRoutes);
-app.use('api/tasks',taskRoutes)
+app.use('/api/tasks',taskRoutes)
 
 app.listen(port, async() => {
      await connectDb();

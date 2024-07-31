@@ -4,9 +4,13 @@ import React from 'react';
 import { Box, Button, VStack, Text, Divider, Avatar, Stack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { FiHome, FiSettings, FiUsers, FiBarChart2, FiDownload } from 'react-icons/fi';
+import { useDrawer } from '@/context/DrawerContext';
+
+
 
 const Sidebar = () => {
   const router = useRouter();
+  const { onOpen } = useDrawer();
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -80,7 +84,7 @@ const Sidebar = () => {
         <Button
           colorScheme="purple"
           w="full"
-          onClick={() => handleNavigation('/tasks/create')}
+          onClick={onOpen}
         >
           Create new task
         </Button>
